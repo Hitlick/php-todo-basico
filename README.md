@@ -1,3 +1,5 @@
+![Screenshot do app](imagem_2026-02-19_152025559.png)
+
 # PHP TODO (básico do básico)
 
 Mini projeto para estudos e portfólio: uma lista de tarefas feita em **PHP puro (sem framework)**, com persistência em **JSON**.
