@@ -1,0 +1,9 @@
+# Dados locais (não subir tarefas pessoais)
+storage/data.json
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Logs/temporários comuns
+*.log
