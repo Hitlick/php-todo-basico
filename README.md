@@ -1,4 +1,4 @@
-![Screenshot do app](imagem_2026-02-19_152025559.png)
+![Screenshot do app](assets/imagem_2026-02-19_152025559.png)
 
 # PHP TODO (básico do básico)
 
