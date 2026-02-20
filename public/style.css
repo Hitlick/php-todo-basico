@@ -20,3 +20,13 @@ form { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: c
 .flash { padding: 10px 12px; border-radius: 12px; margin: 14px 0; border: 1px solid #1f2a37; background: #0b1220; }
 .flash.success { border-color: #238636; }
 .flash.error { border-color: #da3633; }
+.btn {
+    display: inline-block;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #2b3645;
+    background: #0b1220;
+    color: #e6edf3;
+    text-decoration: none;
+  }
+  .btn:hover { filter: brightness(1.05); }
