@@ -13,8 +13,13 @@ final class TaskRepository
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
+
         if (!file_exists($path)) {
-            file_put_contents($path, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            file_put_contents(
+                $path,
+                json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+                LOCK_EX
+            );
         }
     }
 
@@ -23,14 +28,16 @@ final class TaskRepository
     {
         $data = $this->read();
         // Ordena por id desc (mais nova primeiro)
-        usort($data, fn($a, $b) => $b['id'] <=> $a['id']);
+        usort($data, fn($a, $b) => (int)$b['id'] <=> (int)$a['id']);
         return $data;
     }
 
     public function add(string $title): void
     {
         $data = $this->read();
-        $nextId = empty($data) ? 1 : (max(array_column($data, 'id')) + 1);
+
+        $ids = array_map('intval', array_column($data, 'id'));
+        $nextId = empty($ids) ? 1 : (max($ids) + 1);
 
         $data[] = [
             'id' => $nextId,
@@ -51,6 +58,7 @@ final class TaskRepository
                 break;
             }
         }
+        unset($t); // boa prática ao usar referência em foreach
         $this->write($data);
     }
 
@@ -61,10 +69,38 @@ final class TaskRepository
         $this->write($data);
     }
 
+    public function find(int $id): ?array
+    {
+        $data = $this->read();
+        foreach ($data as $t) {
+            if ((int)$t['id'] === $id) {
+                return $t;
+            }
+        }
+        return null;
+    }
+
+    public function updateTitle(int $id, string $title): void
+    {
+        $data = $this->read();
+        foreach ($data as &$t) {
+            if ((int)$t['id'] === $id) {
+                $t['title'] = $title;
+                break;
+            }
+        }
+        unset($t);
+        $this->write($data);
+    }
+
     /** @return array<int, array<string,mixed>> */
     private function read(): array
     {
-        $raw = (string)file_get_contents($this->path);
+        $raw = file_get_contents($this->path);
+        if ($raw === false) {
+            return [];
+        }
+
         $data = json_decode($raw, true);
         return is_array($data) ? $data : [];
     }
@@ -74,7 +110,8 @@ final class TaskRepository
     {
         file_put_contents(
             $this->path,
-            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+            LOCK_EX
         );
     }
 }
